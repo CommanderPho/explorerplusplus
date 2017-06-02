@@ -537,10 +537,23 @@ INT_PTR CALLBACK Explorerplusplus::FilesFoldersProc(HWND hDlg,UINT uMsg,WPARAM w
 					CheckDlgButton(hDlg,IDC_OPTIONS_CHECK_SHOWINFOTIPS,BST_CHECKED);
 
 				if(m_InfoTipType == INFOTIP_SYSTEM)
+				{
 					CheckDlgButton(hDlg,IDC_OPTIONS_RADIO_SYSTEMINFOTIPS,BST_CHECKED);
+				}
 				else
+				{
 					CheckDlgButton(hDlg,IDC_OPTIONS_RADIO_CUSTOMINFOTIPS,BST_CHECKED);
+				}
 
+				if (m_bDisplayMixedGlobal)
+				{
+					CheckDlgButton(hDlg,IDC_MIXED_FILES_AND_FOLDERS,BST_CHECKED);
+				}
+				if (m_bSortNonLogicalGlobal)
+				{
+					CheckDlgButton(hDlg,IDC_SORT_NAMES_NONLOGICAL,BST_CHECKED);
+				}
+				
 				hCBSize = GetDlgItem(hDlg,IDC_COMBO_FILESIZES);
 
 				for(int i = 0;i < SIZEOF_ARRAY(FILE_SIZES);i++)
@@ -587,6 +600,8 @@ INT_PTR CALLBACK Explorerplusplus::FilesFoldersProc(HWND hDlg,UINT uMsg,WPARAM w
 				case IDC_SETTINGS_CHECK_ZIPFILES:
 				case IDC_SETTINGS_CHECK_FRIENDLYDATES:
 				case IDC_OPTIONS_HOVER_TIME:
+				case IDC_MIXED_FILES_AND_FOLDERS:
+				case IDC_SORT_NAMES_NONLOGICAL:
 					PropSheet_Changed(g_hOptionsPropertyDialog,hDlg);
 					break;
 
@@ -681,6 +696,10 @@ INT_PTR CALLBACK Explorerplusplus::FilesFoldersProc(HWND hDlg,UINT uMsg,WPARAM w
 						else
 							m_InfoTipType = INFOTIP_CUSTOM;
 
+						m_bDisplayMixedGlobal = (IsDlgButtonChecked(hDlg,IDC_MIXED_FILES_AND_FOLDERS) == BST_CHECKED);
+
+						m_bSortNonLogicalGlobal = (IsDlgButtonChecked(hDlg,IDC_SORT_NAMES_NONLOGICAL) == BST_CHECKED);
+	
 						hCBSize = GetDlgItem(hDlg,IDC_COMBO_FILESIZES);
 
 						iSel = (int)SendMessage(hCBSize,CB_GETCURSEL,0,0);
@@ -705,6 +724,9 @@ INT_PTR CALLBACK Explorerplusplus::FilesFoldersProc(HWND hDlg,UINT uMsg,WPARAM w
 							m_pShellBrowser[(int)tcItem.lParam]->SetInsertSorted(m_bInsertSorted);
 							m_pShellBrowser[(int)tcItem.lParam]->SetForceSize(m_bForceSize);
 							m_pShellBrowser[(int)tcItem.lParam]->SetSizeDisplayFormat(m_SizeDisplayFormat);
+
+							m_pShellBrowser[(int)tcItem.lParam]->SetDisplayMixed(m_bDisplayMixedGlobal);
+							m_pShellBrowser[(int)tcItem.lParam]->SetSortNonLogical(m_bSortNonLogicalGlobal);
 
 							RefreshTab((int)tcItem.lParam);
 
